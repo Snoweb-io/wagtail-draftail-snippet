@@ -38,7 +38,7 @@ setup(
             "templates/wagtail_draftail_snippet/*.html",
         ]
     },
-    install_requires=["wagtail>=2.15.0,<6.0"],
+    install_requires=[],
     extras_require={
         "dev": [
             "black==19.*,>=19.10.0",
