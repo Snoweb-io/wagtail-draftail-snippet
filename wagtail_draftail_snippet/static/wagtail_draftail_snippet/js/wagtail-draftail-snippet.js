@@ -22,14 +22,14 @@
 
     if (entityType.type === 'SNIPPET') {
       return {
-        url: global.chooserUrls.snippetLinkModelChooser,
+        url: entityType.chooserUrls.snippetLinkModelChooser,
         urlParams: {},
         onload: global.SNIPPET_MODEL_CHOOSER_MODAL_ONLOAD_HANDLERS,
       };
     }
     else if (entityType.type === 'SNIPPET-EMBED') {
       return {
-        url: global.chooserUrls.snippetEmbedModelChooser,
+        url: entityType.chooserUrls.snippetEmbedModelChooser,
         urlParams: {},
         onload: global.SNIPPET_MODEL_CHOOSER_MODAL_ONLOAD_HANDLERS,
       };
@@ -43,12 +43,12 @@
     }
   };
 
-  const getSnippetModelObjectChooserConfig = () => {
+  const getSnippetModelObjectChooserConfig = (entityType) => {
     let url;
     let urlParams;
 
     return {
-      url: global.chooserUrls.snippetChooser.concat(window.snippetModelMeta.appName, '/', window.snippetModelMeta.modelName, '/'),
+      url: entityType.chooserUrls.snippetChooser.concat(window.snippetModelMeta.appName, '/', window.snippetModelMeta.modelName, '/'),
       urlParams: {},
       onload: global.SNIPPET_CHOOSER_MODAL_ONLOAD_HANDLERS,
     };
@@ -108,7 +108,8 @@
 
     onModelChosen(snippetModelMeta) {
       window.snippetModelMeta = snippetModelMeta;
-      const { url, urlParams, onload } = getSnippetModelObjectChooserConfig();
+      const { onClose, entityType, entity, editorState } = this.props;
+      const { url, urlParams, onload } = getSnippetModelObjectChooserConfig(entityType);
 
       this.model_workflow.close();
 

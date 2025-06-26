@@ -1,5 +1,5 @@
 from django.urls import include, path
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.html import format_html
 from django.utils.translation import gettext
 
@@ -15,6 +15,16 @@ from .richtext import (
 )
 
 WAGTAIL_MAJOR_VERSION = int(__version__.split(".", 1)[0])
+
+CHOOSER_URLS = {
+    "snippetChooser": reverse_lazy("wagtaildraftailsnippet:choose_generic"),
+    "snippetLinkModelChooser": reverse_lazy(
+        "wagtaildraftailsnippet:choose-snippet-link-model"
+    ),
+    "snippetEmbedModelChooser": reverse_lazy(
+        "wagtaildraftailsnippet:choose-snippet-embed-model"
+    ),
+}
 
 if WAGTAIL_MAJOR_VERSION >= 3:
     from wagtail import hooks
@@ -45,7 +55,7 @@ def register_snippet_link_feature(features):
         "draftail",
         feature_name,
         draftail_features.EntityFeature(
-            {"type": type_, "icon": "snippet", "description": gettext("Snippet Link")},
+            {"type": type_, "icon": "snippet", "description": gettext("Snippet Link"), "chooserUrls": CHOOSER_URLS},
             js=js_include,
         ),
     )
@@ -65,7 +75,7 @@ def register_snippet_embed_feature(features):
     # wagtailadmin/js/chooser-modal.js is needed for window.ChooserModalOnloadHandlerFactory
     js_include = [
         "wagtailadmin/js/chooser-modal.js",
-        "wagtailsnippets/js/snippet-chooser-modal.js",
+        # "wagtailsnippets/js/snippet-chooser-modal.js",
         "wagtail_draftail_snippet/js/snippet-model-chooser-modal.js",
         "wagtail_draftail_snippet/js/wagtail-draftail-snippet.js",
     ]
@@ -78,7 +88,7 @@ def register_snippet_embed_feature(features):
         "draftail",
         feature_name,
         draftail_features.EntityFeature(
-            {"type": type_, "icon": "code", "description": gettext("Snippet Embed")},
+            {"type": type_, "icon": "code", "description": gettext("Snippet Embed"), "chooserUrls": CHOOSER_URLS},
             js=js_include,
         ),
     )
@@ -86,20 +96,6 @@ def register_snippet_embed_feature(features):
     features.register_converter_rule(
         "contentstate", feature_name, ContentstateSnippetEmbedConversionRule
     )
-
-
-@hooks.register("insert_editor_js")
-def editor_js():
-
-    html = f"""
-            <script>
-                window.chooserUrls.snippetChooser = '{reverse('wagtaildraftailsnippet:choose_generic')}';
-                window.chooserUrls.snippetLinkModelChooser = '{reverse("wagtaildraftailsnippet:choose-snippet-link-model")}';
-                window.chooserUrls.snippetEmbedModelChooser = '{reverse("wagtaildraftailsnippet:choose-snippet-embed-model")}';
-            </script>    
-            """
-
-    return format_html(html)
 
 
 @hooks.register("register_admin_urls")
